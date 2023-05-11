@@ -36,9 +36,9 @@ class Job(object):
         parser_a.add_argument('-t', '--threads', type=int,
                               help='num of threads', default=8)
         parser_a.add_argument('-q', '--min-MQ', type=int,
-                              help='skip alignments with mapQ smaller than INT', default=0)
+                              help='skip alignments with mapQ smaller than INT', default=20)
         parser_a.add_argument('-Q', '--min-BQ', type=int,
-                              help='skip bases with baseQ/BAQ smaller than INT', default=0)
+                              help='skip bases with baseQ/BAQ smaller than INT', default=20)
         parser_a.set_defaults(func=prepare_main)
 
         # argparse for qcfilter
