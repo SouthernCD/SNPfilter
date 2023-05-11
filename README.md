@@ -12,7 +12,7 @@ pip install snpfilter
 **prepare**: Use BWA and SAMTools to map the sequencing data, generate BAM files and BCF files, etc.
 
 ```
-usage: SNPfilter prepare [-h] [-t THREADS] sample_id reference R1 R2
+usage: SNPfilter prepare [-h] [-t THREADS] [-q MIN_MQ] [-Q MIN_BQ] sample_id reference R1 R2
 
 Prepare work environment
 
@@ -26,6 +26,10 @@ optional arguments:
   -h, --help            show this help message and exit
   -t THREADS, --threads THREADS
                         num of threads
+  -q MIN_MQ, --min-MQ MIN_MQ
+                        skip alignments with mapQ smaller than INT
+  -Q MIN_BQ, --min-BQ MIN_BQ
+                        skip bases with baseQ/BAQ smaller than INT
 ```
 
 **qcfilter**: filtering SNPs from BCF file with min depth and min variant frequency
@@ -49,6 +53,23 @@ optional arguments:
                         A comma-separated list of bcf files, loci that appear in these bcf files will be filtered out
 ```
 
+**codefilter**: filtering SNPs based on whether they cause changes in coding amino acids
+
+```
+usage: SNPfilter codefilter [-h] sample_id input_bcf reference gff_file
+
+filtering SNPs based on whether they cause changes in coding amino acids
+
+positional arguments:
+  sample_id   sample id
+  input_bcf   input bcf file
+  reference   reference genome in fasta format
+  gff_file    gff file for reference genome
+
+optional arguments:
+  -h, --help  show this help message and exit
+```
+
 ## Example
 1. Indexing of the reference genome using BWA
 ```
@@ -69,9 +90,16 @@ SNPfilter qcfilter -d 2 -v 0.3 sample2 sample2.bcf
 SNPfilter qcfilter -d 2 -v 0.3 sample3 sample3.bcf
 ```
 
-4. Use **qcfilter** to filter SNPs with a strict threshold（d=5, v=0.5, other sample BCF file as background)
+4. Use **qcfilter** to filter SNPs with a strict threshold（d=5, v=0.9, other sample BCF file as background)
 ```
-SNPfilter qcfilter -d 5 -v 0.5 -b sample2.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample1 sample1.d2.v0.30.bcf
-SNPfilter qcfilter -d 5 -v 0.5 -b sample1.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample2 sample2.d2.v0.30.bcf
-SNPfilter qcfilter -d 5 -v 0.5 -b sample1.d2.v0.30.bcf,sample2.d2.v0.30.bcf sample3 sample3.d2.v0.30.bcf
+SNPfilter qcfilter -d 5 -v 0.9 -b sample2.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample1 sample1.d2.v0.30.bcf
+SNPfilter qcfilter -d 5 -v 0.9 -b sample1.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample2 sample2.d2.v0.30.bcf
+SNPfilter qcfilter -d 5 -v 0.9 -b sample1.d2.v0.30.bcf,sample2.d2.v0.30.bcf sample3 sample3.d2.v0.30.bcf
+```
+
+5. Use **codefilter** to filter SNPs that do not cause changes in coding amino acids
+```
+SNPfilter codefilter sample1 sample1.d5.v0.90.bcf reference.fasta reference.gff
+SNPfilter codefilter sample2 sample2.d5.v0.90.bcf reference.fasta reference.gff
+SNPfilter codefilter sample3 sample3.d5.v0.90.bcf reference.fasta reference.gff
 ```

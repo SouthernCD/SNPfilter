@@ -12,7 +12,7 @@ class Job(object):
     def __init__(self):
         pass
 
-    def arg_parser(self):
+    def run_arg_parser(self):
         # argument parse
         parser = argparse.ArgumentParser(
             prog='SNPfilter',
@@ -71,12 +71,30 @@ class Job(object):
                               help='gff file for reference genome')
         parser_a.set_defaults(func=codefilter_main)
 
+        self.arg_parser = parser
+
         self.args = parser.parse_args()
+        
+        # parser.set_defaults(func=parser.print_help())
 
     def run(self):
-        self.arg_parser()
-        self.args.func(self.args)
+        self.run_arg_parser()
+        # self.args = self.arg_parser.parse_args()
+        # if hasattr(self, "subcommand_name"):
+        #     self.args.func(self.args)
+        # else:
+        #     self.arg_parser.print_help()
 
+        args_dict = vars(self.args)
+
+        if args_dict["subcommand_name"] == "prepare":
+            prepare_main(self.args)
+        elif args_dict["subcommand_name"] == "qcfilter":
+            qcfilter_main(self.args)
+        elif args_dict["subcommand_name"] == "codefilter":
+            codefilter_main(self.args)
+        else:
+            self.arg_parser.print_help()
 
 
 def prepare_main(args):
@@ -111,8 +129,6 @@ rm $TAG.sam $TAG.bam $TAG.fm.bam $TAG.st.fm.bam"""
 
     cmd_string = "rm %s" % map_sh_file
     cmd_run(cmd_string)
-
-    
 
 
 def get_all_site_from_bcf(bcf_file):
@@ -298,7 +314,7 @@ def codefilter_main(args):
     with open(output_tsv, 'w') as f:
 
         f.write("\t".join(["chr_id", "pos", "ref", "alt", "depth", "freq", "gene_id",
-                           "mRNA_id", "on_CDS", "AA_changed", "wild_aa", "mutative_aa"]) + "\n")
+                           "mRNA_id", "on_CDS", "AA_changed", "changed_site","wild_aa", "mutative_aa"]) + "\n")
         input_bcf = pysam.VariantFile(input_bcf_file)
 
         for record in input_bcf.fetch():
@@ -331,8 +347,14 @@ def codefilter_main(args):
                     output_list = if_on_cds_and_change_aa(
                         record.pos, alts, gene, ref_dict)
                     for g_id, m_id, on_cds, change_aa, mutative_aa, wild_aa in output_list:
+                        change_site_info = "None"
+                        if change_aa:
+                            for i in range(len(wild_aa)):
+                                if wild_aa[i] != mutative_aa[i]:
+                                    change_site_info = "%s%d%s" % (wild_aa[i], (i+1), mutative_aa[i])
+
                         f.write("\t".join([record.chrom, str(record.pos), record.ref, alts, str(depth), str(
-                            variant_ratio), g_id, m_id, str(on_cds), str(change_aa), str(wild_aa), str(mutative_aa)]) + "\n")
+                            variant_ratio), g_id, m_id, str(on_cds), str(change_aa), change_site_info, str(wild_aa), str(mutative_aa)]) + "\n")
 
         input_bcf.close()
 
