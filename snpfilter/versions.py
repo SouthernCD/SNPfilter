@@ -4,6 +4,12 @@ def get_versions():
 
 versions = [
     {
+        "number": "0.0.4",
+        "features": [
+            "1. update README.md",
+        ],
+    },
+    {
         "number": "0.0.3",
         "features": [
             "1. change default --min-MQ to 20 and --min-BQ to 20",
