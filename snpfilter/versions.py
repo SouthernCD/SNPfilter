@@ -4,6 +4,12 @@ def get_versions():
 
 versions = [
     {
+        "number": "0.0.5",
+        "features": [
+            "1. add max_depth option for qcfilter",
+        ],
+    },
+    {
         "number": "0.0.4",
         "features": [
             "1. update README.md",

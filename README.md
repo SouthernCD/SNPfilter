@@ -47,6 +47,8 @@ optional arguments:
   -h, --help            show this help message and exit
   -d MIN_DEPTH, --min_depth MIN_DEPTH
                         min depth
+  -D MAX_DEPTH, --max_depth MAX_DEPTH
+                        max depth                        
   -v MIN_VARIANT_FREQUENCY, --min_variant_frequency MIN_VARIANT_FREQUENCY
                         min variant frequency
   -b BACKGROUND_SITE, --background_site BACKGROUND_SITE
@@ -93,18 +95,18 @@ SNPfilter prepare -t 10 sample2 reference.fasta sample2_R1.trimmed.fastq.gz samp
 SNPfilter prepare -t 10 sample3 reference.fasta sample3_R1.trimmed.fastq.gz sample3_R2.trimmed.fastq.gz
 ```
 
-4. Use **qcfilter** to filter SNPs with a relaxed threshold（d=2, v=0.3)
+4. Use **qcfilter** to filter SNPs with a relaxed threshold（d=2, D=40, v=0.3）
 ```
-SNPfilter qcfilter -d 2 -v 0.3 sample1 sample1.bcf
-SNPfilter qcfilter -d 2 -v 0.3 sample2 sample2.bcf
-SNPfilter qcfilter -d 2 -v 0.3 sample3 sample3.bcf
+SNPfilter qcfilter -d 2 -D 40 -v 0.3 sample1 sample1.bcf
+SNPfilter qcfilter -d 2 -D 40 -v 0.3 sample2 sample2.bcf
+SNPfilter qcfilter -d 2 -D 40 -v 0.3 sample3 sample3.bcf
 ```
 
-5. Use **qcfilter** to filter SNPs with a strict threshold（d=5, v=0.9, other sample BCF file as background)
+5. Use **qcfilter** to filter SNPs with a strict threshold（d=5, D=40, v=0.9, other sample BCF file as background)
 ```
-SNPfilter qcfilter -d 5 -v 0.9 -b sample2.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample1 sample1.d2.v0.30.bcf
-SNPfilter qcfilter -d 5 -v 0.9 -b sample1.d2.v0.30.bcf,sample3.d2.v0.30.bcf sample2 sample2.d2.v0.30.bcf
-SNPfilter qcfilter -d 5 -v 0.9 -b sample1.d2.v0.30.bcf,sample2.d2.v0.30.bcf sample3 sample3.d2.v0.30.bcf
+SNPfilter qcfilter -d 5 -D 40 -v 0.9 -b sample2.d2.v0.30.bcf,sample3.d2.D40.v0.30.bcf sample1 sample1.d2.D40.v0.30.bcf
+SNPfilter qcfilter -d 5 -D 40 -v 0.9 -b sample1.d2.v0.30.bcf,sample3.d2.D40.v0.30.bcf sample2 sample2.d2.D40.v0.30.bcf
+SNPfilter qcfilter -d 5 -D 40 -v 0.9 -b sample1.d2.v0.30.bcf,sample2.d2.D40.v0.30.bcf sample3 sample3.d2.D40.v0.30.bcf
 ```
 
 6. Use **codefilter** to filter SNPs that do not cause changes in coding amino acids

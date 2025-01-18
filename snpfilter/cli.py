@@ -51,6 +51,8 @@ class Job(object):
                               help='input bcf file')
         parser_a.add_argument('-d', '--min_depth', type=int,
                               help='min depth', default=2)
+        parser_a.add_argument('-D', '--max_depth', type=int,
+                                help='max depth', default=40)
         parser_a.add_argument('-v', '--min_variant_frequency', type=float,
                               help='min variant frequency', default=0.3)
         parser_a.add_argument('-b', '--background_site', type=str,
@@ -149,8 +151,8 @@ def qcfilter_main(args):
 
     back_site_list = set(back_site_list)
 
-    filterd_vcf_file = '%s.d%d.v%.2f.vcf' % (
-        args.sample_id, args.min_depth, args.min_variant_frequency)
+    filterd_vcf_file = '%s.d%d.D%d.v%.2f.vcf' % (
+        args.sample_id, args.min_depth, args.max_depth, args.min_variant_frequency)
 
     input_bcf = pysam.VariantFile(args.input_bcf)
 
@@ -189,13 +191,13 @@ def qcfilter_main(args):
             variant_ratio = 1 - \
                 alt_count_dict[ref_base] / depth if depth > 0 else 0
 
-            if variant_ratio >= args.min_variant_frequency and depth > args.min_depth and depth <= 40:
+            if variant_ratio >= args.min_variant_frequency and depth > args.min_depth and depth <= args.max_depth:
                 output_vcf.write(record.__str__())
 
     input_bcf.close()
 
-    filterd_bcf_file = '%s.d%d.v%.2f.bcf' % (
-        args.sample_id, args.min_depth, args.min_variant_frequency)
+    filterd_bcf_file = '%s.d%d.D%d.v%.2f.bcf' % (
+        args.sample_id, args.min_depth, args.max_depth, args.min_variant_frequency)
 
     cmd_string = f"bcftools view -O b -o {filterd_bcf_file} {filterd_vcf_file}"
     cmd_run(cmd_string)
